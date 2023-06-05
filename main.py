@@ -1,8 +1,9 @@
+import json
 from tkinter import *
 from tkinter import messagebox
 import random
 import pyperclip
-
+import json
 
 def generate_password():
     letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
@@ -28,18 +29,17 @@ def save():
     website = web_entry.get()
     email = email_entry.get()
     password = password_entry.get()
-    text = f"{website} | {email} | {password}\n"
-
+    new_data = {
+        website: {
+            "email": email,
+            "password": password
+        }
+    }
     if website == "" or password == "":
         messagebox.showinfo(title="Error", message="Please don't leave any fields empty.")
-        return
-
-    is_ok = messagebox.askokcancel(title=website, message=f"There are the details entered: \n Email: "f"{email}"
-                                                          f" \nPassword: {password} \nIs it okay to save?")
-
-    if is_ok:
-        with open("data.txt", "a") as data:
-            data.write(f"{text}")
+    else:
+        with open("data.json", "w") as data:
+            json.dump(new_data, data, indent=4)
 
         web_entry.delete(0, END)
         password_entry.delete(0, END)
