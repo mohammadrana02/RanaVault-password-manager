@@ -1,9 +1,9 @@
-import json
 from tkinter import *
 from tkinter import messagebox
 import random
 import pyperclip
 import json
+
 
 def generate_password():
     letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
@@ -38,11 +38,35 @@ def save():
     if website == "" or password == "":
         messagebox.showinfo(title="Error", message="Please don't leave any fields empty.")
     else:
-        with open("data.json", "w") as data:
-            json.dump(new_data, data, indent=4)
+        try:  # checks if there is already a data file otherwise it will create one
+            data_file = open("data.json", "r")
+        except FileNotFoundError:
+            with open("data.json", "w") as data_file:
+                json.dump(new_data, data_file, indent=4)
+        else:
+            # reads old data
+            data = json.load(data_file)
+            # updating old data with new data
+            data.update(new_data)
 
-        web_entry.delete(0, END)
-        password_entry.delete(0, END)
+            with open("data.json", "w") as data_file:
+                # saving updated data
+                json.dump(data, data_file, indent=4)
+        finally:
+            web_entry.delete(0, END)
+            password_entry.delete(0, END)
+            data_file.close()
+
+
+def find_password():
+    data_file = open("data.json", "r")
+    data = json.load(data_file)
+
+    find_web = web_entry.get()
+    find_user = data[find_web]["email"]
+    find_pass = data[find_web]["password"]
+
+    messagebox.showinfo(title=find_web, message=f"Email: {find_user} \nPassword: {find_pass}")
 
 
 window = Tk()
@@ -82,5 +106,8 @@ add_button.grid(column=1, row=5)
 
 generate_pass_button = Button(text="Generate Password", width=30, command=generate_password)
 generate_pass_button.grid(column=1, row=4)
+
+search_button = Button(text="Search", width=30, command=find_password)
+search_button.grid(column=1, row=6)
 
 window.mainloop()
