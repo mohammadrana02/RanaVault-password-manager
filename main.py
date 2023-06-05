@@ -59,14 +59,22 @@ def save():
 
 
 def find_password():
-    data_file = open("data.json", "r")
-    data = json.load(data_file)
+    try:
+        data_file = open("data.json", "r")
+    except FileNotFoundError:
+        messagebox.showinfo(title="Error", message="No Date File Found.")
+        return
+    else:
+        data = json.load(data_file)
 
-    find_web = web_entry.get()
-    find_user = data[find_web]["email"]
-    find_pass = data[find_web]["password"]
-
-    messagebox.showinfo(title=find_web, message=f"Email: {find_user} \nPassword: {find_pass}")
+    try:
+        find_web = web_entry.get()
+        find_user = data[find_web]["email"]
+        find_pass = data[find_web]["password"]
+    except KeyError:
+        messagebox.showinfo(title="Error", message="No details for that website exists.")
+    else:
+        messagebox.showinfo(title=find_web, message=f"Email: {find_user} \nPassword: {find_pass}")
 
 
 window = Tk()
